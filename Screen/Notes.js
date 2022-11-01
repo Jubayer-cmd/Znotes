@@ -13,12 +13,20 @@ import {
   Alert,
   FlatList,
   Modal,
-  StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from "react-native";
+import { Switch, TouchableRipple } from "react-native-paper";
 import InlineTextButton from "../components/InlineTextButton";
+import { PreferencesContext } from "../components/PreferencesContext";
+import {
+  Cardview,
+  Container,
+  FloatButton,
+  Sidebar,
+  TitleText,
+  TitleText2,
+} from "../components/style";
 import { auth, db } from "../firebase";
 import AppStyles from "../styles/AppStyles";
 import AddToDoModal from "./../components/AddToDoModal";
@@ -26,6 +34,8 @@ const Notes = ({ navigation }) => {
   const [note, setNotes] = useState(null);
   let [modalVisible, setModalVisible] = React.useState(false);
   let [isLoading, setIsLoading] = React.useState(true);
+
+  const { toggleTheme, isThemeDark } = React.useContext(PreferencesContext);
 
   React.useEffect(() => {
     let loadToDoList = async () => {
@@ -71,9 +81,16 @@ const Notes = ({ navigation }) => {
   };
 
   const Item = ({ title }) => (
-    <View style={[styles.card, styles.shadowProp]}>
+    <Cardview
+      style={{
+        shadowOpacity: 0.75,
+        shadowRadius: 5,
+        shadowColor: "gray",
+        shadowOffset: { height: 0, width: 0 },
+      }}
+    >
       <View style={AppStyles.fillSpace}>
-        <Text style={{ fontSize: 20, fontWeight: "600" }}>{title.text}</Text>
+        <TitleText2 fontSize="16px">{title.text}</TitleText2>
         <InlineTextButton
           text="Delete"
           color="#258ea6"
@@ -89,94 +106,55 @@ const Notes = ({ navigation }) => {
           }
         />
       </View>
-    </View>
+    </Cardview>
   );
 
   const renderItem = ({ item }) => <Item title={item} />;
 
   return (
-    <View style={{ marginTop: 20, paddingBottom: 60 }}>
-      <Text
-        style={{
-          fontSize: 30,
-          alignSelf: "center",
-          fontWeight: "600",
-        }}
-      >
-        Your Notes
-      </Text>
-      <View
-        style={[
-          AppStyles.rowContainer,
-          AppStyles.rightAligned,
-          AppStyles.rightMargin,
-          AppStyles.topMargin,
-        ]}
-      >
-        <InlineTextButton
-          text="Manage Account"
-          color="#258ea6"
-          onPress={() => navigation.navigate("ManageAccount")}
-        />
+    <Container>
+      <View>
+        <TitleText fontSize="28px">Your Notes</TitleText>
+        <Sidebar>
+          <InlineTextButton
+            text="Manage Account"
+            color="#258ea6"
+            onPress={() => navigation.navigate("ManageAccount")}
+          />
+
+          <TitleText2 fontSize="16px">Dark:</TitleText2>
+          <TouchableRipple onPress={() => toggleTheme()}>
+            <Switch color={"red"} value={isThemeDark} />
+          </TouchableRipple>
+        </Sidebar>
+        <Modal
+          animationType="slide"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <AddToDoModal
+            onClose={() => setModalVisible(false)}
+            addNotes={addNotes}
+          />
+        </Modal>
+
+        {isLoading ? (
+          <ActivityIndicator size="large" />
+        ) : (
+          <FlatList
+            data={note}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.id}
+          />
+        )}
+
+        <FloatButton onPress={() => setModalVisible(true)}>
+          <Text style={{ color: "white" }}>Note+</Text>
+        </FloatButton>
       </View>
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}
-      >
-        <AddToDoModal
-          onClose={() => setModalVisible(false)}
-          addNotes={addNotes}
-        />
-      </Modal>
-
-      {isLoading ? (
-        <ActivityIndicator size="large" />
-      ) : (
-        <FlatList
-          data={note}
-          renderItem={renderItem}
-          keyExtractor={(item) => item.id}
-        />
-      )}
-
-      <TouchableOpacity
-        style={{
-          borderWidth: 1,
-          borderColor: "red",
-          alignItems: "center",
-          justifyContent: "center",
-          width: 70,
-          position: "absolute",
-          top: 600,
-          right: 30,
-          height: 70,
-          backgroundColor: "red",
-          borderRadius: 100,
-        }}
-        onPress={() => setModalVisible(true)}
-      >
-        <Text style={{ color: "white" }}>Note+</Text>
-      </TouchableOpacity>
-    </View>
+    </Container>
   );
 };
 
 export default Notes;
-const styles = StyleSheet.create({
-  card: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    paddingVertical: 25,
-    paddingHorizontal: 15,
-    width: "100%",
-    marginVertical: 10,
-  },
-  shadowProp: {
-    shadowColor: "#171717",
-    shadowOffset: { width: -2, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 3,
-  },
-});

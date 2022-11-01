@@ -12,7 +12,8 @@ import {
   writeBatch,
 } from "firebase/firestore";
 import React from "react";
-import { Button, Text, TextInput, View } from "react-native";
+import { Button, Text, View } from "react-native";
+import { Container, TextNew, TextNews } from "../components/style";
 import { auth, db } from "../firebase";
 import AppStyles from "../styles/AppStyles";
 
@@ -82,17 +83,15 @@ export default function ManageAccount({ navigation }) {
   };
 
   return (
-    <View style={AppStyles.container}>
+    <Container>
       <Text style={AppStyles.errorText}>{errorMessage}</Text>
-      <TextInput
-        style={[AppStyles.textInput, AppStyles.darkTextInput]}
+      <TextNew
         placeholder="Current Password"
         value={currentPassword}
         secureTextEntry={true}
         onChangeText={setCurrentPassword}
       />
-      <TextInput
-        style={[AppStyles.textInput, AppStyles.darkTextInput]}
+      <TextNews
         placeholder="New Password"
         value={newPassword}
         secureTextEntry={true}
@@ -108,6 +107,6 @@ export default function ManageAccount({ navigation }) {
         <Button title="Logout" onPress={logout} />
       </View>
       <Button title="Back to ToDos" onPress={() => navigation.pop()} />
-    </View>
+    </Container>
   );
 }

@@ -1,14 +1,14 @@
 import React from "react";
-import { Button, Text, TextInput, View } from "react-native";
+import { Button, Text, View } from "react-native";
 import AppStyles from "../styles/AppStyles";
+import { Container, TextNew } from "./style";
 
 export default function AddToDoModal(props) {
   let [note, setNote] = React.useState("");
   return (
-    <View style={AppStyles.container}>
+    <Container>
       <Text style={AppStyles.header}>Add Notes</Text>
-      <TextInput
-        style={[AppStyles.textInput, AppStyles.darkTextInput]}
+      <TextNew
         placeholder="Write your note here"
         value={note}
         onChangeText={setNote}
@@ -28,6 +28,6 @@ export default function AddToDoModal(props) {
           />
         </View>
       </View>
-    </View>
+    </Container>
   );
 }
